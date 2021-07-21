@@ -1,4 +1,4 @@
-baseurl = ""
+baseurl = "https://aritra741.github.io/SnufflePuff/"
 languageCode = "en-us"
 theme = "hugo-theme-stack"
 paginate = 5
