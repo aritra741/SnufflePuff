@@ -4,3 +4,7 @@
 [submodule "themes/hugo-theme-stack"]
 	path = themes/hugo-theme-stack
 	url = https://github.com/CaiJimmy/hugo-theme-stack/
+[submodule "public"]
+	path = public
+	url = https://github.com/aritra741/SnufflePuff.github.io.git
+	branch = main
