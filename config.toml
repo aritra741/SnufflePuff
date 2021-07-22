@@ -1,4 +1,4 @@
-baseurl = "https://aritra741.github.io/"
+baseurl = ""
 languageCode = "en-us"
 theme = "hugo-theme-stack"
 paginate = 5
@@ -30,7 +30,7 @@ rssFullContent = true
     src = "img/fms.png"
 
   [params.article]
-  math = false
+  math = true
   toc = true
 
     [params.article.license]

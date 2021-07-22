@@ -7,13 +7,17 @@ categories: ["String"]
 tags: ["Suffix Structures"]
 ---
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+
 String related problems used to scare the shit out of me. Then I was introduced to some string suffix structures and it absolutely blew my mind. I don&#39;t claim to be an expert on suffix structures, but I hope my approach to solve the following problems will help you get some insight.
 
 Please keep in mind that this article is **in no way an introduction** to these data structures. I&#39;ll attach some links at the end. Read them to understand how these data structures work.
 
 Let&#39;s start then.
 
-## 1. **Codeforces GYM 101991E- Exciting Menus**
+##  **Codeforces GYM 101991E- Exciting Menus**
 
 Problem statement:
 
@@ -25,11 +29,11 @@ Let&#39;s think about the popularity of a substring first. If this was the only 
 
 It&#39;s pretty apparent that if we have multiple occurrences of a substring, then we should take the highest _joy level_ corresponding to that substring. I don&#39;t think we can do that with a normal trie. Here&#39;s where **Aho-Corasick** comes into play.
 
-Think what the _fail link_ of an Aho-Corasick node means. It points to the node with the maximum prefix match with the suffix of the original node. Suppose we have a prefix &quot;aab&quot;. Then the node corresponding to this prefix must be a _fail link/suffix link_ to a prefix ending with &quot;aab&quot;, right? Then that node will be a _suffix link_ to another node ending with &quot;aab&quot; and so on.
+Think what the _fail link_ of an Aho-Corasick node means. It points to the node with the maximum prefix match with the suffix of the original node. Suppose we have a prefix ${\text{\textquoteleft} aab \text{\textquoteright}}$ . Then the node corresponding to this prefix must be a _fail link/suffix link_ to a prefix ending with ${\text{\textquoteleft} aab \text{\textquoteright}}$ , right? Then that node will be a _suffix link_ to another node ending with ${\text{\textquoteleft} aab \text{\textquoteright}}$ and so on.
 
-Now, we will make another graph where we will add a directed edge from the suffix link node to the original node. For example, if the suffix link of a prefix &quot;bccaab&quot; goes to the prefix &quot;aab&quot;, then we will add a directed edge from &quot;aab&quot; to &quot;bccaab&quot;. This graph will be a rooted tree. In this newly formed graph, the descendants of &quot;aab&quot; will be the prefixes which have &quot;aab&quot; as their suffix. So, if we know the maximum _joy level_ of the descendants of &quot;aab&quot;, we can assign that value to &quot;aab&quot;; pretty cool right?
+Now, we will make another graph where we will add a directed edge from the suffix link node to the original node. For example, if the suffix link of a prefix ${\text{\textquoteleft} bccab \text{\textquoteright}}$ goes to the prefix ${\text{\textquoteleft} aab \text{\textquoteright}}$, then we will add a directed edge from ${\text{\textquoteleft} aab \text{\textquoteright}}$ to ${\text{\textquoteleft} bccab \text{\textquoteright}}$. This graph will be a rooted tree. In this newly formed graph, the descendants of ${\text{\textquoteleft} aab \text{\textquoteright}}$ will be the prefixes which have ${\text{\textquoteleft} aab \text{\textquoteright}}$ as their suffix. So, if we know the maximum _joy level_ of the descendants of ${\text{\textquoteleft} aab \text{\textquoteright}}$, we can assign that value to ${\text{\textquoteleft} aab \text{\textquoteright}}$ ,  pretty cool right?
 
-Now, we&#39;ll just traverse each node of the **Aho-Corasick** automaton and use the formula on each of them to find out the answer.
+Now, we&#39;ll just traverse through each node of the **Aho-Corasick** automaton and use the formula on each of them to find out the answer.
 
 Here&#39;s my code:
 ```c++
@@ -190,3 +194,236 @@ int main()
 }
 ```
 
+##  **Codeforces 1202E-**  **You Are Given Some Strings...**
+
+Problem statement:
+![Problem Statement](1202E.png)
+
+Problem link: [Problem - E - Codeforces](https://codeforces.com/contest/1202/problem/E)
+
+Since the constraints are in the ${ \ 2.10^5 }$ ballpark, we can&#39;t even dare to think of bruteforce here. Even though the problem deals with string concatenation, we&#39;ll now see why we don&#39;t need to concatenate anything.
+
+Let, 
+$ {f(i)= \mathrm{Number \thinspace of \thinspace query \thinspace strings \thinspace \bm{starting} \thinspace at \thinspace position \thinspace \bm{i}} } $
+
+$ {g(i)= \mathrm{Number \thinspace of \thinspace query \thinspace strings \thinspace \bm{ending} \thinspace at \thinspace position \thinspace \bm{i}} } $
+
+Then the answer is ${\displaystyle\sum_{i=1}^n f(i).g(i) }$
+
+Now, our next challenge is to figure out how we can calculate ${f(i)}$ and ${g(i)}$.
+
+Let&#39;s have a look at ${f(i)}$ first. We can define ${f(i)}$ like this as well:
+
+${f(i)= \mathrm{Number \thickspace of \thickspace query \thickspace strings \thickspace that \thickspace are \thickspace prefixes \thickspace of \thickspace the \thickspace suffix \thickspace starting \thickspace at \thickspace position \thickspace \bm{i} }}$
+
+We can find out the number of times a prefix of a suffix repeats in a string using suffix array. Since suffix array is always sorted, the occurrence of any prefix in a suffix will always be consecutive. So let&#39;s build a suffix array using the string t. Now for every query string, we can find out how many times it has occurred in string t using binary search. We will get a range in the suffix array where the string sj occurs. We&#39;ll then increment the counter for each position in the range. That&#39;s it! We&#39;re done with ${f(i)}$.
+
+Now getting back to ${g(i)}$, we can observe that this is exactly ${f(i)}$ for the reversed version of the string t! To calculate ${g(i)}$, we can just reverse t and perform the same operations as we did for ${f(i)}$.
+
+Now we can just loop through each position and calculate the answer.
+
+My code:
+
+```C++
+#include<bits/stdc++.h>
+#define ll long long
+#define M 200007
+#define mod 1000000007
+using namespace std;
+const int kinds = 256;///maximum ASCII value of any character of the string
+int nn;
+char str[M];
+int K, buc[M], r[M], sa[M], X[M], Y[M], high[M];
+bool cmp(int *r, int a, int b, int x)
+{
+    return (r[a] == r[b] && r[a + x] == r[b + x]);
+}
+vector<int>saa;
+int lcp[M];
+
+string t, s;
+int n, m;
+
+void suffix_array_DA(int n, int m)
+{
+    int *x = X, *y = Y, i, j, k = 0, l;
+    memset(buc, 0, sizeof(buc));
+    for (i = 0; i < n; i++)
+        buc[ x[i] = str[i] ]++;
+    for (i = 1; i < m; i++)
+        buc[i] += buc[i - 1];
+    for (i = n - 1; i >= 0; i--)
+        sa[--buc[x[i]]] = i;
+    for (l = 1, j = 1; j < n; m = j, l <<= 1)
+    {
+        j = 0;
+        for (i = n - l; i < n; i++)
+            y[j++] = i;
+        for (i = 0; i < n; i++)
+            if (sa[i] >= l)
+                y[j++] = sa[i] - l;
+        for (i = 0; i < m; i++)
+            buc[i] = 0;
+        for (i = 0; i < n; i++)
+            buc[ x[y[i]] ]++;
+        for (i = 1; i < m; i++)
+            buc[i] += buc[i - 1];
+        for (i = n - 1; i >= 0; i--)
+            sa[ --buc[ x[y[i]] ]] = y[i];
+        for (swap(x, y), x[sa[0]] = 0, i = 1, j = 1; i < n; i++)
+            x[sa[i]] = cmp(y, sa[i - 1], sa[i], l) ? j - 1 : j++;
+    }
+    for (i = 1; i < n; i++)
+        r[sa[i]] = i;
+    for (i = 0; i < n - 1; high[r[i++]] = k)
+        for (k ? k-- : 0, j = sa[r[i] - 1]; str[i + k] == str[j + k]; k++);
+}
+void suffix_array_construction(string s)
+{
+    int n = s.size();
+    for (int i = 0; i < n; i++)
+        str[i] = s[i];
+    str[n] = '\0';
+    suffix_array_DA(n + 1, kinds);
+
+    for (int i = 1; i <= n; i++)
+        saa.push_back(sa[i]);
+}
+void lcp_construction(string const& s, vector<int> const& p)
+{
+    int n = s.size();
+    vector<int> rank(n, 0);
+    for (int i = 0; i < n; i++)
+        rank[p[i]] = i;
+    int k = 0;
+
+    for (int i = 0; i < n; i++)
+    {
+        if (rank[i] == n - 1)
+        {
+            k = 0;
+            continue;
+        }
+        int j = p[rank[i] + 1];
+        while (i + k < n && j + k < n && s[i + k] == s[j + k])
+            k++;
+        lcp[rank[i]] = k;
+        if (k)
+            k--;
+    }
+}
+
+bool greaterEqual(int sp, int n, const string &ps) {
+    int spl = n - sp, sps = ps.size(), o = min(spl, sps);
+    for (int i = 0; i < o; i++) {
+        if (t[sp + i] > ps[i]) return 1;
+        else if (t[sp + i] < ps[i]) return 0;
+    }
+    return spl >= sps;
+}
+
+bool greaterByVal(int sp, int n, const string &ps) {
+    int spl = n - sp, sps = ps.size(), o = min(spl, sps);
+    for (int i = 0; i < o; i++) {
+        if (t[sp + i] > ps[i]) return 1;
+        else if (t[sp + i] < ps[i]) return 0;
+    }
+    return 0;
+}
+
+pair<int, int> rangeString(int n, const string &ps) {  // returns [a,b) , not [a,b]
+    int lo = 0, hi = n - 1, l = n, r = n;
+    while (lo <= hi) {
+        auto mid = (lo + hi) >> 1;
+        if (greaterEqual(saa[mid], n, ps)) l = mid, hi = mid - 1;
+        else lo = mid + 1;
+    }
+    lo = l, hi = n - 1;
+    while (lo <= hi) {
+        auto mid = (lo + hi) >> 1;
+        if (greaterByVal(saa[mid], n, ps)) r = mid, hi = mid - 1;
+        else lo = mid + 1;
+    }
+    return {l, r};
+}
+
+bool match(int mid)
+{
+    int cnt = 0;
+
+    for ( int j = 0, k = mid; j < m and k < n; j++, k++ )
+    {
+        if ( t[k] == s[j] )
+            cnt++;
+        else
+            break;
+    }
+
+    if (cnt >= m)
+        return 1;
+    return 0;
+}
+
+ll st[M], en[M];
+ll shuru[M], shesh[M];
+string ss[M];
+
+int main()
+{
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+
+    cin >> t;
+    n = t.size();
+    suffix_array_construction(t);
+    lcp_construction(t, saa);
+    nn = saa.size();
+
+    int q;
+    cin>>q;
+
+    for ( int i = 0; i < q; i++ )
+    {
+        cin >> ss[i];
+
+        pair<int,int>strRange= rangeString(n,ss[i]);
+
+        st[strRange.first]++;
+        st[strRange.second]--;  // [a,b)
+    }
+
+    for( int i=1;i<n;i++ )
+        st[i]+= st[i-1];
+    for( int i=0;i<n;i++ )
+        shuru[saa[i]]= st[i];
+    
+    saa.clear();
+
+    reverse(t.begin(), t.end());
+    suffix_array_construction(t);
+    lcp_construction(t, saa);
+
+    for ( int i = 0; i < q; i++ )
+    {
+        reverse( ss[i].begin(), ss[i].end() );
+
+        pair<int,int>strRange= rangeString(n,ss[i]);
+
+        en[strRange.first]++;
+        en[strRange.second]--;  // [a,b)
+    }
+    
+
+    for( int i=1;i<n;i++ )
+        en[i]+= en[i-1];
+    for( int i=0;i<n;i++ )
+        shesh[n-saa[i]-1]= en[i];
+
+    ll ans= 0;
+
+    for( int i=1;i<n;i++ )
+        ans+= ( shuru[i]*shesh[i-1] );
+    
+    cout<< ans ;
+}
+```
