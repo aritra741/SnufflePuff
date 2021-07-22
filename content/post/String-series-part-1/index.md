@@ -199,7 +199,7 @@ int main()
 Problem statement:
 ![Problem Statement](1202E.png)
 
-Problem link: [Problem - E - Codeforces](https://codeforces.com/contest/1202/problem/E)
+Problem link: [You Are Given Some Strings.. - Codeforces](https://codeforces.com/contest/1202/problem/E)
 
 Since the constraints are in the ${ \ 2.10^5 }$ ballpark, we can&#39;t even dare to think of bruteforce here. Even though the problem deals with string concatenation, we&#39;ll now see why we don&#39;t need to concatenate anything.
 
@@ -425,5 +425,178 @@ int main()
         ans+= ( shuru[i]*shesh[i-1] );
     
     cout<< ans ;
+}
+```
+
+## **Toph- Distinctness**
+
+Problem statement:
+![Problem Statement](distinctness.png)
+
+Problem link: [Distinctness- Toph](https://toph.co/p/distinctness)
+
+Let&#39;s get straight to the point. If you know how **suffix automaton** actuallyworks, this is a straightforward problem for you.
+
+Each node in a suffix automaton corresponds to one or more **unique** substrings of the original string. What do they have in common? All of those substrings end in the same position(s) in the original string. Everytime we add a new character at the end of the original string, we create **at least 1** new substring (why?). Suppose we have a string ${\text{\textquoteleft} aab \text{\textquoteright}}$ and we have created a suffix automaton using this string. If we add a ${\text{\textquoteleft} c \text{\textquoteright}}$ at the end, we know for sure that we&#39;re creating a new unique substring of length 4 (${\text{\textquoteleft} aabc \text{\textquoteright}}$). If we add this character to the automaton, the string ${\text{\textquoteleft} aabc \text{\textquoteright}}$ will belong to a node that corresponds to all the unique substrings that end at position 4. This means that we know how many unique substrings end at position 4; which implies that we have found out the number of new unique substrings we have created. If the substring ${\text{\textquoteleft} aabc \text{\textquoteright}}$ belongs to the node ${\mathrm{curr}}$ , then 
+The number of new substrings= ${\mathrm{ len(curr)-len(suffixLink(curr))}}$ .
+
+${\mathrm{ans(i)= ans(i-1)+len(curr)-len(suffixLink(curr))}}$
+
+My code:
+
+```c++
+#include<bits/stdc++.h>
+#define ll long long
+#define sc second
+#define mod 1000000007
+#define mx 400010
+#define inf 2e9
+using namespace std;
+
+char s[mx];
+bool f;
+ll ans;
+
+class Automata
+{
+public:
+    struct data
+    {
+        int link, len, cnt, dist;
+        int valid = 0;
+        int next[27] ;
+
+        data() {}
+        data(int link, int len) : link(link), len(len) {}
+    };
+
+    data *node ;
+    bool visfordfs[mx];
+    int num, last ;
+    set< pair<int, int> > st;
+
+    void reset()
+    {
+        num = 1 ;
+
+        node[0].valid = 0;
+        node[0].link = -1 ;
+        node[0].len = 0 ;
+        node[0].cnt = 0 ;
+        last = 0 ;
+        memset(node[0].next, 0, sizeof(node[0].next));
+    }
+
+    Automata() {}
+    Automata(int mx_len)
+    {
+        mx_len += 7 ;
+        mx_len = mx_len * 2 ;
+        node = new data[mx_len] ;
+
+        memset(visfordfs, 0, sizeof(visfordfs));
+
+        reset();
+    }
+
+    void addLetter(char ch)
+    {
+        int cur = num++;
+        int let = ch - 'a' ;
+        int p = last ;
+
+        if (f)
+            node[cur].valid= 1;
+
+        node[cur].len = node[last].len + 1 ;
+        node[cur].cnt = 1;
+        st.insert({node[cur].len, cur});
+        memset(node[cur].next, 0, sizeof(node[cur].next));
+
+        for (p = last ; p != -1 && !node[p].next[let] ; p = node[p].link)
+            node[p].next[let] = cur ;
+
+        if (p == -1)
+            node[cur].link = 0 ;
+
+        else
+        {
+            int q = node[p].next[let] ;
+
+            if (node[p].len + 1 == node[q].len)
+                node[cur].link = q ;
+
+            else
+            {
+                int clone = num++;
+
+                node[clone] = node[q] ;
+                node[clone].len = node[p].len + 1 ;
+                node[clone].valid= 0;
+                node[clone].cnt = 0;
+                st.insert({node[clone].len, clone});
+
+                for (; p != -1 && node[p].next[let] == q ; p = node[p].link)
+                    node[p].next[let] = clone ;
+
+                node[q].link = node[cur].link = clone ;
+            }
+        }
+
+        if( node[cur].link>-1 )
+            ans+= node[cur].len-node[node[cur].link].len; // Adding the new ones
+
+        last = cur ;
+    }
+
+    void count_sub_str()
+    {
+        for ( auto it = st.rbegin(); it != st.rend(); it++ )
+        {
+            node[ node[it->sc].link ].cnt += node[it->sc].cnt;
+        }
+    }
+    void count_valid_sub_str()
+    {
+        for ( auto it = st.rbegin(); it != st.rend(); it++ )
+        {
+            node[ node[it->sc].link ].valid += node[it->sc].valid;
+        }
+    }
+    
+
+    void count_dist_str( int x )
+    {
+        if ( node[x].dist )
+            return;
+
+        node[x].dist = 1;
+
+        for ( int i = 0; i < 26; i++ )
+            if ( node[x].next[i] )
+            {
+                count_dist_str( node[x].next[i] );
+                node[x].dist += node[ node[x].next[i] ].dist ;
+            }
+    }
+};
+
+Automata sa;
+
+int main()
+{
+    int sz;
+    
+    scanf("%s", s);
+    sz= strlen(s);
+
+    sa = Automata( sz );
+
+    for ( int i = 0; i < sz; i++ )
+    {
+        sa.addLetter( s[i] );
+        cout<<ans<<"\n";
+    }
+
 }
 ```
