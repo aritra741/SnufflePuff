@@ -216,15 +216,15 @@ Let&#39;s have a look at ${f(i)}$ first. We can define ${f(i)}$ like this as wel
 
 ${f(i)= \mathrm{Number \thickspace of \thickspace query \thickspace strings \thickspace that \thickspace are \thickspace prefixes \thickspace of \thickspace the \thickspace suffix \thickspace starting \thickspace at \thickspace position \thickspace \bm{i} }}$
 
-We can find out the number of times a prefix of a suffix repeats in a string using suffix array. Since suffix array is always sorted, the occurrence of any prefix in a suffix will always be consecutive. So let&#39;s build a suffix array using the string t. Now for every query string, we can find out how many times it has occurred in string t using binary search. We will get a range in the suffix array where the string sj occurs. We&#39;ll then increment the counter for each position in the range. That&#39;s it! We&#39;re done with ${f(i)}$.
+We can find out the number of times a prefix of a suffix repeats in a string using suffix array. Since suffix array is always sorted, the occurrence of any prefix in a suffix will always be consecutive. So let&#39;s build a suffix array using the string ${ \boldsymbol {t} }$. Now for every query string, we can find out how many times it has occurred in string ${ \boldsymbol {t} }$ using binary search. We will get a range in the suffix array where a query string occurs. We&#39;ll then increment the counter for each position in the range. That&#39;s it! We&#39;re done with ${f(i)}$.
 
-Now getting back to ${g(i)}$, we can observe that this is exactly ${f(i)}$ for the reversed version of the string t! To calculate ${g(i)}$, we can just reverse t and perform the same operations as we did for ${f(i)}$.
+Now getting back to ${g(i)}$, we can observe that this is exactly ${f(i)}$ for the reversed version of the string ${ \boldsymbol{t} }$! To calculate ${g(i)}$, we can just reverse t and perform the same operations as we did for ${f(i)}$.
 
 Now we can just loop through each position and calculate the answer.
 
 My code:
 
-```C++
+```c++
 #include<bits/stdc++.h>
 #define ll long long
 #define M 200007
