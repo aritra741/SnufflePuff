@@ -1,7 +1,7 @@
 ---
 title: "String series: Part 1"
 date: 2021-07-21T00:25:58+06:00
-draft: false
+draft: true
 image: "pexels-fiona-art-5186869.jpg"
 categories: ["String"]
 tags: ["Suffix Structures"]

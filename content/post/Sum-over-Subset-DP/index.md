@@ -1,7 +1,7 @@
 ---
 title: "Sum Over Subset DP"
 date: 2021-07-29T12:23:59+06:00
-draft: false
+draft: true
 image: "pexels-fiona-art-5022849.jpg"
 ---
 
